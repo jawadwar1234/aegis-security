@@ -4,306 +4,594 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AEGIS | Admin Console</title>
+    <title>AEGIS | Security Admin Console</title>
 
-    <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        .db-body {
-            background: #020617;
-            min-height: 100vh;
-            color: #f1f5f9;
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            flex-direction: column;
+        :root {
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-card-subtle: #f1f5f9;
+            --border-color: #e2e8f0;
+            --border-hover: #cbd5e1;
+            
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            
+            --primary-blue: #2563eb;
+            --primary-blue-bg: #eff6ff;
+            --primary-blue-border: #bfdbfe;
+
+            --success-green: #059669;
+            --success-green-bg: #ecfdf5;
+            --success-green-border: #a7f3d0;
+
+            --danger-red: #dc2626;
+            --danger-red-bg: #fef2f2;
+            --danger-red-border: #fecaca;
+
+            --warning-amber: #d97706;
+            --warning-amber-bg: #fffbeb;
+            --warning-amber-border: #fde68a;
+
+            --purple-accent: #7c3aed;
+            --purple-accent-bg: #f5f3ff;
+            --purple-accent-border: #ddd6fe;
+
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
         }
 
-        /* Top Bar */
-        .db-topbar {
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body.light-theme {
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ─── Top Navbar ─── */
+        .admin-nav {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 14px 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 28px;
-            border-bottom: 1px solid rgba(255,255,255,0.07);
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(12px);
             position: sticky;
             top: 0;
             z-index: 50;
+            box-shadow: var(--shadow-sm);
         }
 
-        .db-logo {
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            width: 34px;
+            height: 34px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #ffffff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 16px;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+        }
+
+        .brand-titles h1 {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.2px;
+            display: inline-block;
+        }
+
+        .brand-tag {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-left: 6px;
+            background: var(--bg-card-subtle);
+            padding: 2px 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .status-badge-live {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--success-green-bg);
+            border: 1px solid var(--success-green-border);
+            color: var(--success-green);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background-color: var(--success-green);
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2);
+            animation: livePulse 2s infinite;
+        }
+
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.85); }
+        }
+
+        .portal-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 7px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.15s ease-in-out;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .portal-link-btn:hover {
+            background: var(--bg-card-subtle);
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+        }
+
+        /* ─── Main Container ─── */
+        .main-wrapper {
+            padding: 28px 32px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            max-width: 1440px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* ─── KPI Stats Row ─── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px 20px;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .kpi-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .kpi-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-icon {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        .kpi-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1.1;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .kpi-sub {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .kpi-value.green { color: var(--success-green); }
+        .kpi-value.red { color: var(--danger-red); }
+        .kpi-value.purple { color: var(--purple-accent); }
+        .kpi-value.blue { color: var(--primary-blue); }
+
+        /* ─── Log Panel ─── */
+        .log-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .panel-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+        }
+
+        .panel-title-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .panel-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .entry-count-badge {
+            background: var(--primary-blue-bg);
+            border: 1px solid var(--primary-blue-border);
+            color: var(--primary-blue);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 12px;
+        }
+
+        .panel-actions {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .db-logo-icon {
-            width: 30px;
-            height: 30px;
-            background: linear-gradient(135deg, #1e40af, #3b82f6);
-            border-radius: 7px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 14px;
-            color: #fff;
-            box-shadow: 0 0 10px rgba(59,130,246,0.4);
-        }
-
-        .db-logo strong { font-size: 15px; letter-spacing: 1px; color: #f1f5f9; }
-        .db-logo span { font-size: 11px; color: #64748b; margin-left: 4px; }
-
-        .db-topbar-right { display: flex; align-items: center; gap: 16px; }
-
-        .db-live-pill {
-            display: flex;
+        .action-button {
+            display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: rgba(16,185,129,0.1);
-            border: 1px solid rgba(16,185,129,0.25);
-            border-radius: 20px;
-            padding: 5px 12px;
-            font-size: 11px;
-            font-weight: 700;
-            color: #10b981;
-            letter-spacing: 0.5px;
-        }
-
-        .db-nav-link {
-            color: #94a3b8;
-            text-decoration: none;
             font-size: 12px;
             font-weight: 600;
-            padding: 6px 14px;
-            border-radius: 6px;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.2s;
-        }
-        .db-nav-link:hover { background: rgba(255,255,255,0.05); color: #f1f5f9; }
-
-        /* Page Layout */
-        .db-content { padding: 24px 28px; flex: 1; display: flex; flex-direction: column; gap: 20px; }
-
-        /* Stats row */
-        .db-stats-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 12px;
-        }
-
-        .db-stat-card {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 12px;
-            padding: 16px 20px;
-        }
-
-        .db-stat-label {
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: #64748b;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-        }
-
-        .db-stat-value { font-size: 26px; font-weight: 800; color: #f1f5f9; line-height: 1; }
-        .db-stat-sub { font-size: 11px; color: #10b981; margin-top: 4px; }
-
-        /* Log Card */
-        .db-log-card {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 12px;
-            overflow: hidden;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .db-log-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-
-        .db-log-title-group { display: flex; align-items: center; gap: 10px; }
-        .db-log-title { font-size: 13px; font-weight: 700; color: #f1f5f9; }
-
-        .db-log-count {
-            background: rgba(59,130,246,0.15);
-            border: 1px solid rgba(59,130,246,0.3);
-            color: #38bdf8;
-            font-size: 10px;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 10px;
-        }
-
-        .db-log-actions { display: flex; gap: 8px; }
-
-        .db-action-btn {
-            background: rgba(30,41,59,0.8);
-            border: 1px solid rgba(255,255,255,0.08);
-            color: #94a3b8;
-            font-size: 11px;
-            font-weight: 600;
-            padding: 5px 12px;
-            border-radius: 6px;
+            padding: 7px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s ease;
         }
-        .db-action-btn:hover { background: rgba(255,255,255,0.06); color: #f1f5f9; }
-        .db-action-btn.export { color: #10b981; border-color: rgba(16,185,129,0.25); }
 
-        .db-table-wrap { overflow-x: auto; flex: 1; }
+        .action-button:hover {
+            background: var(--bg-card-subtle);
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+        }
 
-        .db-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .db-table thead tr { background: rgba(0,0,0,0.3); }
-        .db-table th {
-            padding: 10px 14px;
+        .action-button.export {
+            background: var(--success-green-bg);
+            border-color: var(--success-green-border);
+            color: var(--success-green);
+        }
+
+        .action-button.export:hover {
+            background: #d1fae5;
+        }
+
+        .action-button.clear:hover {
+            background: var(--danger-red-bg);
+            border-color: var(--danger-red-border);
+            color: var(--danger-red);
+        }
+
+        /* ─── Table Styling ─── */
+        .table-container {
+            overflow-x: auto;
+            flex: 1;
+        }
+
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
             text-align: left;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.8px;
-            color: #64748b;
-            text-transform: uppercase;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            white-space: nowrap;
+            font-size: 12px;
         }
-        .db-table td {
-            padding: 10px 14px;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-            color: #cbd5e1;
-            font-family: 'JetBrains Mono', monospace;
+
+        .log-table thead th {
+            background: #f8fafc;
+            color: var(--text-secondary);
             font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
             white-space: nowrap;
         }
-        .db-table tbody tr:hover { background: rgba(59,130,246,0.05); }
 
-        .db-verdict-human {
-            display: inline-block; padding: 2px 10px;
-            background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3);
-            color: #10b981; border-radius: 10px; font-size: 10px; font-weight: 700;
-        }
-        .db-verdict-bot {
-            display: inline-block; padding: 2px 10px;
-            background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3);
-            color: #ef4444; border-radius: 10px; font-size: 10px; font-weight: 700;
-        }
-        .db-verdict-suspicious {
-            display: inline-block; padding: 2px 10px;
-            background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3);
-            color: #f59e0b; border-radius: 10px; font-size: 10px; font-weight: 700;
-        }
-        .db-verdict-wrong {
-            display: inline-block; padding: 2px 10px;
-            background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.3);
-            color: #a855f7; border-radius: 10px; font-size: 10px; font-weight: 700;
+        .log-table tbody td {
+            padding: 13px 16px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            white-space: nowrap;
         }
 
-        .db-score-bar-wrap { display: flex; align-items: center; gap: 6px; }
-        .db-score-mini-bar {
-            width: 60px; height: 5px;
-            background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden;
+        .log-table tbody tr {
+            transition: background-color 0.1s ease;
         }
-        .db-score-mini-fill { height: 100%; border-radius: 3px; }
 
-        .db-empty-state {
-            text-align: center; padding: 60px 20px; color: #475569;
+        .log-table tbody tr:hover {
+            background-color: #f8fafc;
         }
-        .db-empty-state .empty-icon { font-size: 32px; margin-bottom: 12px; }
-        .db-empty-state p { font-size: 13px; }
+
+        /* Status & Verdict Badges (NO TICKS, NO CROSSES) */
+        .badge-correct-yes {
+            display: inline-block;
+            background: var(--success-green-bg);
+            border: 1px solid var(--success-green-border);
+            color: var(--success-green);
+            font-weight: 700;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .badge-correct-no {
+            display: inline-block;
+            background: var(--danger-red-bg);
+            border: 1px solid var(--danger-red-border);
+            color: var(--danger-red);
+            font-weight: 700;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .verdict-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.2px;
+        }
+
+        .verdict-human {
+            background: var(--success-green-bg);
+            border: 1px solid var(--success-green-border);
+            color: var(--success-green);
+        }
+
+        .verdict-bot {
+            background: var(--danger-red-bg);
+            border: 1px solid var(--danger-red-border);
+            color: var(--danger-red);
+        }
+
+        .verdict-wrong {
+            background: var(--purple-accent-bg);
+            border: 1px solid var(--purple-accent-border);
+            color: var(--purple-accent);
+        }
+
+        .verdict-suspicious {
+            background: var(--warning-amber-bg);
+            border: 1px solid var(--warning-amber-border);
+            color: var(--warning-amber);
+        }
+
+        /* Mini Score Bar */
+        .score-cell {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .score-track {
+            width: 50px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .score-bar {
+            height: 100%;
+            border-radius: 3px;
+        }
+
+        .score-text {
+            font-weight: 700;
+            font-size: 11px;
+        }
+
+        /* Empty State */
+        .empty-log-state {
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: var(--text-muted);
+        }
+
+        .empty-log-state p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .empty-log-state a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .empty-log-state a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
-<body class="db-body">
+<body class="light-theme">
 
-    <!-- TOP BAR -->
-    <header class="db-topbar">
-        <div class="db-logo">
-            <div class="db-logo-icon">A</div>
-            <div>
-                <strong>AEGIS</strong>
-                <span>/ Admin Console</span>
+    <!-- TOP NAVBAR -->
+    <header class="admin-nav">
+        <div class="nav-left">
+            <div class="brand-icon">A</div>
+            <div class="brand-titles">
+                <h1>AEGIS</h1>
+                <span class="brand-tag">Security Admin</span>
             </div>
         </div>
-        <div class="db-topbar-right">
-            <div class="db-live-pill">
-                <span class="dot-pulse"></span>
-                SHIELD ONLINE
+        <div class="nav-right">
+            <div class="status-badge-live">
+                <span class="live-dot"></span>
+                SYSTEM ACTIVE
             </div>
-            <a href="index.html" class="db-nav-link">⇲ Public Portal</a>
+            <a href="index.html" class="portal-link-btn">
+                <span>Public Portal</span>
+                <span>→</span>
+            </a>
         </div>
     </header>
 
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main class="main-wrapper">
 
-    <!-- MAIN CONTENT -->
-    <div class="db-content">
-
-        <!-- STATS ROW -->
-        <div class="db-stats-row">
-            <div class="db-stat-card">
-                <p class="db-stat-label">Dataset Images</p>
-                <div class="db-stat-value">6,899</div>
-                <p class="db-stat-sub">↑ 8 image categories</p>
-            </div>
-            <div class="db-stat-card">
-                <p class="db-stat-label">Humans Verified</p>
-                <div class="db-stat-value" id="counterHuman" style="color:#10b981;">0</div>
-                <p class="db-stat-sub" id="humanPct">— of total</p>
-            </div>
-            <div class="db-stat-card">
-                <p class="db-stat-label">Bots Blocked</p>
-                <div class="db-stat-value" id="counterBot" style="color:#ef4444;">0</div>
-                <p class="db-stat-sub" id="botPct">— of total</p>
-            </div>
-            <div class="db-stat-card">
-                <p class="db-stat-label">Wrong Selections</p>
-                <div class="db-stat-value" id="counterWrong" style="color:#a855f7;">0</div>
-                <p class="db-stat-sub">Incorrect image chosen</p>
-            </div>
-            <div class="db-stat-card">
-                <p class="db-stat-label">Avg Latency</p>
-                <div class="db-stat-value" id="counterAvgLatency" style="color:#38bdf8;">--</div>
-                <p class="db-stat-sub">ms per session</p>
-            </div>
-            <div class="db-stat-card">
-                <p class="db-stat-label">Total Sessions</p>
-                <div class="db-stat-value" id="counterTotal" style="color:#94a3b8;">0</div>
-                <p class="db-stat-sub">All time</p>
-            </div>
-        </div>
-
-
-        <!-- SESSION LOG TABLE -->
-        <div class="db-log-card">
-            <div class="db-log-header">
-                <div class="db-log-title-group">
-                    <span class="db-log-title">Session Verification Log</span>
-                    <span class="db-log-count" id="logRowCount">0 entries</span>
+        <!-- KPI SUMMARY ROW -->
+        <section class="stats-grid">
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-label">Dataset Images</span>
+                    <span class="kpi-icon">📁</span>
                 </div>
-                <div class="db-log-actions">
-                    <button id="exportCsvBtn" class="db-action-btn export">⬇ Export CSV</button>
-                    <button id="clearLogBtn" class="db-action-btn">Clear</button>
+                <div class="kpi-value">6,899</div>
+                <div class="kpi-sub">8 categories indexed</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-label">Humans Verified</span>
+                    <span class="kpi-icon">👤</span>
+                </div>
+                <div class="kpi-value green" id="counterHuman">0</div>
+                <div class="kpi-sub" id="humanPct">0% pass rate</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-label">Bots Blocked</span>
+                    <span class="kpi-icon">🤖</span>
+                </div>
+                <div class="kpi-value red" id="counterBot">0</div>
+                <div class="kpi-sub" id="botPct">0% of sessions</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-label">Wrong Selections</span>
+                    <span class="kpi-icon">⚠️</span>
+                </div>
+                <div class="kpi-value purple" id="counterWrong">0</div>
+                <div class="kpi-sub">Incorrect image clicked</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-label">Avg Latency</span>
+                    <span class="kpi-icon">⏱️</span>
+                </div>
+                <div class="kpi-value blue" id="counterAvgLatency">--</div>
+                <div class="kpi-sub">Milliseconds per click</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-label">Total Sessions</span>
+                    <span class="kpi-icon">📊</span>
+                </div>
+                <div class="kpi-value" id="counterTotal">0</div>
+                <div class="kpi-sub">All-time logs</div>
+            </div>
+        </section>
+
+        <!-- SESSION LOG TABLE PANEL -->
+        <section class="log-panel">
+            <div class="panel-header">
+                <div class="panel-title-group">
+                    <h2 class="panel-title">Verification & Telemetry Logs</h2>
+                    <span class="entry-count-badge" id="logRowCount">0 entries</span>
+                </div>
+                <div class="panel-actions">
+                    <button id="exportCsvBtn" class="action-button export">Export CSV</button>
+                    <button id="clearLogBtn" class="action-button clear">Clear Logs</button>
                 </div>
             </div>
 
-            <div class="db-table-wrap">
-                <table class="db-table">
+            <div class="table-container">
+                <table class="log-table">
                     <thead>
                         <tr>
                             <th>#</th>
                             <th>Timestamp</th>
                             <th>Category Pair</th>
-                            <th>Correct?</th>
+                            <th>Correct</th>
                             <th>Latency (ms)</th>
                             <th>Curvature</th>
                             <th>Speed Variance</th>
@@ -313,18 +601,19 @@
                             <th>Flags</th>
                         </tr>
                     </thead>
-                    <tbody id="logTableBody"></tbody>
+                    <tbody id="logTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
                 </table>
 
-                <div class="db-empty-state" id="emptyLogState">
-                    <div class="empty-icon">◈</div>
-                    <p>No sessions yet.<br>Interactions on the <a href="index.html" style="color:#38bdf8;">Public Portal</a> will appear here automatically.</p>
+                <div class="empty-log-state" id="emptyLogState">
+                    <div class="empty-state-icon">📋</div>
+                    <p>No verification sessions recorded yet.<br>Complete challenges on the <a href="index.html">Public Portal</a> to see live telemetry logs appear here.</p>
                 </div>
             </div>
-        </div>
+        </section>
 
-    </div>
-
+    </main>
 
     <script>
         const LOG_KEY = 'aegis_session_log';
@@ -335,35 +624,38 @@
 
         let logEntries = loadLog();
 
-        // ── Verdict badge HTML ──
+        // ── Verdict badge HTML (Clean text, no ticks or cross marks) ──
         function verdictBadge(entry) {
-            // Determine verdict based on classification (set by captcha-engine after merging correctness)
             switch (entry.classification) {
                 case 'HUMAN_VERIFIED':
-                    return `<span class="db-verdict-human">Human ✓</span>`;
+                    return `<span class="verdict-badge verdict-human">Human</span>`;
                 case 'SUSPICIOUS_BEHAVIOR':
-                    return `<span class="db-verdict-suspicious">Suspicious</span>`;
+                    return `<span class="verdict-badge verdict-suspicious">Suspicious</span>`;
                 case 'BOT_DETECTED':
-                    return `<span class="db-verdict-bot">Bot ✗</span>`;
+                    return `<span class="verdict-badge verdict-bot">Bot</span>`;
                 case 'WRONG_ANSWER':
-                    return `<span class="db-verdict-wrong">Wrong Image</span>`;
+                    return `<span class="verdict-badge verdict-wrong">Wrong Image</span>`;
                 default:
-                    // Fallback for old log entries that may not have the new classification
-                    if (!entry.isCorrectSelection) return `<span class="db-verdict-wrong">Wrong Image</span>`;
-                    return `<span class="db-verdict-suspicious">Unknown</span>`;
+                    if (entry.isCorrectSelection === false) return `<span class="verdict-badge verdict-wrong">Wrong Image</span>`;
+                    return `<span class="verdict-badge verdict-suspicious">Unknown</span>`;
             }
         }
 
+        // ── Mini Score Bar with matching light-mode colors ──
         function scoreBarHtml(score) {
-            const color = score >= 70 ? '#10b981' : score >= 45 ? '#f59e0b' : '#ef4444';
-            return `<div class="db-score-bar-wrap">
-                        <div class="db-score-mini-bar">
-                            <div class="db-score-mini-fill" style="width:${score}%; background:${color};"></div>
-                        </div>
-                        <span style="color:${color}; font-weight:700;">${score}%</span>
-                    </div>`;
+            const numScore = Number(score) || 0;
+            const color = numScore >= 70 ? '#059669' : numScore >= 45 ? '#d97706' : '#dc2626';
+            return `
+                <div class="score-cell">
+                    <div class="score-track">
+                        <div class="score-bar" style="width: ${numScore}%; background-color: ${color};"></div>
+                    </div>
+                    <span class="score-text" style="color: ${color};">${numScore}%</span>
+                </div>
+            `;
         }
 
+        // ── Render Log Table ──
         function renderLog() {
             const tbody = document.getElementById('logTableBody');
             const emptyState = document.getElementById('emptyLogState');
@@ -382,32 +674,36 @@
             tbody.innerHTML = [...logEntries].reverse().map((entry, i) => {
                 const flags = (entry.flags || []).join(', ') || '—';
                 const rowNum = logEntries.length - i;
-                // isCorrectSelection: stored as boolean true/false
-                const correct = entry.isCorrectSelection === true;
-                const correctCell = correct
-                    ? `<span style="color:#10b981; font-weight:700;">✓ Yes</span>`
-                    : `<span style="color:#ef4444; font-weight:700;">✗ No</span>`;
-                return `<tr>
-                    <td style="color:#475569;">${rowNum}</td>
-                    <td>${entry.timestamp}</td>
-                    <td><span style="color:#94a3b8;">${entry.dominantCat}</span> / <strong style="color:#f1f5f9;">${entry.intruderCat}</strong></td>
-                    <td>${correctCell}</td>
-                    <td>${entry.latencyMs} ms</td>
-                    <td>${entry.curvature}</td>
-                    <td>${entry.speedVariance}</td>
-                    <td>(${entry.clickX}, ${entry.clickY})</td>
-                    <td>${scoreBarHtml(entry.score)}</td>
-                    <td>${verdictBadge(entry)}</td>
-                    <td style="color:#ef4444; font-size:10px; max-width:180px; white-space:normal;">${flags}</td>
-                </tr>`;
+                
+                // Show clean "Yes" or "No" without ticks or crosses
+                const isCorrect = entry.isCorrectSelection === true;
+                const correctCell = isCorrect
+                    ? `<span class="badge-correct-yes">Yes</span>`
+                    : `<span class="badge-correct-no">No</span>`;
+
+                return `
+                    <tr>
+                        <td style="color: #94a3b8; font-weight: 600;">${rowNum}</td>
+                        <td>${entry.timestamp || '—'}</td>
+                        <td><span style="color: #64748b;">${entry.dominantCat || '—'}</span> / <strong style="color: #0f172a;">${entry.intruderCat || '—'}</strong></td>
+                        <td>${correctCell}</td>
+                        <td>${entry.latencyMs || 0} ms</td>
+                        <td>${entry.curvature !== undefined ? entry.curvature : '—'}</td>
+                        <td>${entry.speedVariance !== undefined ? entry.speedVariance : '—'}</td>
+                        <td>(${entry.clickX !== undefined ? entry.clickX : '—'}, ${entry.clickY !== undefined ? entry.clickY : '—'})</td>
+                        <td>${scoreBarHtml(entry.score)}</td>
+                        <td>${verdictBadge(entry)}</td>
+                        <td style="color: #dc2626; font-size: 11px; max-width: 220px; white-space: normal;">${flags}</td>
+                    </tr>
+                `;
             }).join('');
 
             updateCounters();
         }
 
+        // ── Calculate and Update KPI Counters ──
         function updateCounters() {
             const total = logEntries.length;
-            // Use strict classification check — HUMAN_VERIFIED only set when image was correct + behavioral score >= 70
             const humans = logEntries.filter(e => e.classification === 'HUMAN_VERIFIED').length;
             const bots = logEntries.filter(e => e.classification === 'BOT_DETECTED').length;
             const wrong = logEntries.filter(e => e.classification === 'WRONG_ANSWER' || e.isCorrectSelection === false).length;
@@ -419,12 +715,12 @@
             document.getElementById('counterBot').textContent = bots;
             document.getElementById('counterWrong').textContent = wrong;
             document.getElementById('counterTotal').textContent = total;
-            document.getElementById('counterAvgLatency').textContent = total > 0 ? avgLatency : '--';
-            document.getElementById('humanPct').textContent = total > 0 ? `${Math.round(humans/total*100)}% pass rate` : '— of total';
-            document.getElementById('botPct').textContent = total > 0 ? `${Math.round(bots/total*100)}% of sessions` : '— of total';
+            document.getElementById('counterAvgLatency').textContent = total > 0 ? `${avgLatency} ms` : '--';
+            document.getElementById('humanPct').textContent = total > 0 ? `${Math.round(humans / total * 100)}% pass rate` : '0% pass rate';
+            document.getElementById('botPct').textContent = total > 0 ? `${Math.round(bots / total * 100)}% of sessions` : '0% of sessions';
         }
 
-        // Listen for new sessions written by public portal
+        // ── Synchronize with Public Portal Activity ──
         window.addEventListener('storage', (e) => {
             if (e.key === LOG_KEY) {
                 logEntries = loadLog();
@@ -432,8 +728,9 @@
             }
         });
 
+        // ── Button Handlers ──
         document.getElementById('clearLogBtn').addEventListener('click', () => {
-            if (confirm('Clear all stored session logs?')) {
+            if (confirm('Are you sure you want to clear all stored session logs?')) {
                 logEntries = [];
                 localStorage.removeItem(LOG_KEY);
                 renderLog();
@@ -441,27 +738,39 @@
         });
 
         document.getElementById('exportCsvBtn').addEventListener('click', () => {
-            if (logEntries.length === 0) { alert('No data to export.'); return; }
-            const headers = ['#','Timestamp','DominantCat','IntruderCat','CorrectSelection','LatencyMs','Curvature','SpeedVariance','ClickX','ClickY','Score','Classification','Flags'];
+            if (logEntries.length === 0) {
+                alert('No logs available to export.');
+                return;
+            }
+            const headers = ['#', 'Timestamp', 'Dominant Category', 'Intruder Category', 'Correct', 'Latency (ms)', 'Curvature', 'Speed Variance', 'Click X', 'Click Y', 'Score (%)', 'Verdict', 'Flags'];
             const rows = logEntries.map((e, i) => [
-                i+1, e.timestamp, e.dominantCat, e.intruderCat,
+                i + 1,
+                e.timestamp || '',
+                e.dominantCat || '',
+                e.intruderCat || '',
                 e.isCorrectSelection ? 'Yes' : 'No',
-                e.latencyMs, e.curvature, e.speedVariance,
-                e.clickX, e.clickY, e.score, e.classification,
-                (e.flags||[]).join(' | ')
+                e.latencyMs || 0,
+                e.curvature || '',
+                e.speedVariance || '',
+                e.clickX || '',
+                e.clickY || '',
+                e.score || 0,
+                e.classification || '',
+                (e.flags || []).join(' | ')
             ]);
-            const csv = [headers, ...rows].map(r => r.map(v => `"${v}"`).join(',')).join('\n');
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `aegis_log_${Date.now()}.csv`;
-            a.click();
+
+            const csvContent = [headers, ...rows].map(row => row.map(val => `"${val}"`).join(',')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `aegis_security_logs_${new Date().toISOString().slice(0, 10)}.csv`;
+            link.click();
         });
 
         window.addEventListener('DOMContentLoaded', () => {
             renderLog();
         });
     </script>
-
 </body>
+
 </html>
