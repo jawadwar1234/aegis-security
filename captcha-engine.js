@@ -243,12 +243,25 @@ export class CaptchaEngine {
         };
 
         const isCorrectSelection = (selectedIndex === challengeSnapshot.targetIndex);
+
+        // Get behavioral bot analysis
         const botAnalysis = BotDetector.analyze(telemetrySummary, {
             gridSize: this.currentChallenge.gridSize,
             difficulty: this.currentChallenge.difficulty,
             targetIndex: challengeSnapshot.targetIndex,
             selectedIndex
         });
+
+        // ── Merge answer correctness into final score ──
+        // Wrong image = 0% score regardless of how human-like the mouse movement was.
+        // Correct image = full behavioral score (0-100%).
+        if (!isCorrectSelection) {
+            botAnalysis.humanScore = 0;
+            botAnalysis.isHuman = false;
+            botAnalysis.classification = 'WRONG_ANSWER';
+            botAnalysis.diagnostics.penalties.unshift('Wrong image selected');
+            botAnalysis.diagnostics.flags.push('WRONG_IMAGE_SELECTED');
+        }
 
         const passed = isCorrectSelection && botAnalysis.isHuman;
 

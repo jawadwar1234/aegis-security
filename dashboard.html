@@ -337,10 +337,21 @@
 
         // ── Verdict badge HTML ──
         function verdictBadge(entry) {
-            if (!entry.isCorrectSelection) return `<span class="db-verdict-wrong">Wrong Image</span>`;
-            if (entry.classification === 'HUMAN_VERIFIED') return `<span class="db-verdict-human">Human ✓</span>`;
-            if (entry.classification === 'SUSPICIOUS_BEHAVIOR') return `<span class="db-verdict-suspicious">Suspicious</span>`;
-            return `<span class="db-verdict-bot">Bot ✗</span>`;
+            // Determine verdict based on classification (set by captcha-engine after merging correctness)
+            switch (entry.classification) {
+                case 'HUMAN_VERIFIED':
+                    return `<span class="db-verdict-human">Human ✓</span>`;
+                case 'SUSPICIOUS_BEHAVIOR':
+                    return `<span class="db-verdict-suspicious">Suspicious</span>`;
+                case 'BOT_DETECTED':
+                    return `<span class="db-verdict-bot">Bot ✗</span>`;
+                case 'WRONG_ANSWER':
+                    return `<span class="db-verdict-wrong">Wrong Image</span>`;
+                default:
+                    // Fallback for old log entries that may not have the new classification
+                    if (!entry.isCorrectSelection) return `<span class="db-verdict-wrong">Wrong Image</span>`;
+                    return `<span class="db-verdict-suspicious">Unknown</span>`;
+            }
         }
 
         function scoreBarHtml(score) {
@@ -371,9 +382,11 @@
             tbody.innerHTML = [...logEntries].reverse().map((entry, i) => {
                 const flags = (entry.flags || []).join(', ') || '—';
                 const rowNum = logEntries.length - i;
-                const correctCell = entry.isCorrectSelection
-                    ? `<span style="color:#10b981; font-weight:700;">Yes</span>`
-                    : `<span style="color:#a855f7; font-weight:700;">No</span>`;
+                // isCorrectSelection: stored as boolean true/false
+                const correct = entry.isCorrectSelection === true;
+                const correctCell = correct
+                    ? `<span style="color:#10b981; font-weight:700;">✓ Yes</span>`
+                    : `<span style="color:#ef4444; font-weight:700;">✗ No</span>`;
                 return `<tr>
                     <td style="color:#475569;">${rowNum}</td>
                     <td>${entry.timestamp}</td>
@@ -394,9 +407,10 @@
 
         function updateCounters() {
             const total = logEntries.length;
-            const humans = logEntries.filter(e => e.classification === 'HUMAN_VERIFIED' && e.isCorrectSelection).length;
+            // Use strict classification check — HUMAN_VERIFIED only set when image was correct + behavioral score >= 70
+            const humans = logEntries.filter(e => e.classification === 'HUMAN_VERIFIED').length;
             const bots = logEntries.filter(e => e.classification === 'BOT_DETECTED').length;
-            const wrong = logEntries.filter(e => !e.isCorrectSelection).length;
+            const wrong = logEntries.filter(e => e.classification === 'WRONG_ANSWER' || e.isCorrectSelection === false).length;
             const avgLatency = total > 0
                 ? Math.round(logEntries.reduce((s, e) => s + (Number(e.latencyMs) || 0), 0) / total)
                 : 0;
