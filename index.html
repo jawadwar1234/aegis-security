@@ -40,8 +40,8 @@
             <!-- RESULT SCREEN: BOT DETECTED OVERLAY (NO RETRY BUTTON) -->
             <div class="verification-result-overlay bot-result" id="botDetectedOverlay">
                 <div class="result-icon danger">✕</div>
-                <h2 class="result-title text-danger">Verification Failed</h2>
-                <p class="result-subtitle">Automated or unnatural activity was detected.</p>
+                <h2 class="result-title text-danger" id="botOverlayTitle">Verification Failed</h2>
+                <p class="result-subtitle" id="botOverlaySubtitle">Automated or unnatural activity was detected.</p>
                 
                 <div class="diagnostic-box" style="margin-bottom: 12px;">
                     <div class="diag-header">
@@ -199,6 +199,9 @@
 
         // Handle Bot Detection / Failure
         engine.onFailedCallback = (result) => {
+            // Reset to default text for real user failures
+            document.getElementById('botOverlayTitle').textContent = 'Verification Failed';
+            document.getElementById('botOverlaySubtitle').textContent = 'Automated or unnatural activity was detected.';
             saveSessionToDatabase(result);
             const bot = result.botAnalysis;
             botScorePill.textContent = `Flagged (${bot.humanScore}% Score)`;
@@ -245,6 +248,11 @@
             humanOverlay.classList.remove('active');
             await engine.init();
             engine.render(mount, { gridSize: 9, difficulty: 'hard', camouflage: true });
+
+            // Pre-set the overlay to show Bot Detected (not Verification Failed)
+            document.getElementById('botOverlayTitle').textContent = 'Bot Detected';
+            document.getElementById('botOverlaySubtitle').textContent = 'Automated bot attack intercepted and blocked.';
+            document.getElementById('botScorePill').textContent = 'Bot Blocked';
 
             // Let images render for a moment, then attack
             setTimeout(() => {

@@ -1,11 +1,11 @@
 {
-  "totalSessions": 4,
-  "humansVerified": 2,
+  "totalSessions": 6,
+  "humansVerified": 3,
   "botsBlocked": 0,
-  "wrongSelections": 2,
-  "avgLatencyMs": 2388,
+  "wrongSelections": 3,
+  "avgLatencyMs": 2131,
   "createdAt": "2026-08-22T05:29:24.201Z",
-  "lastUpdated": "2026-08-22T05:42:16.370Z",
+  "lastUpdated": "2026-08-22T05:58:13.190Z",
   "logs": [
     {
       "timestamp": "2026-08-22 05:30:45",
@@ -70,6 +70,42 @@
         "WRONG_IMAGE_SELECTED"
       ],
       "id": "sess_1787377336369_b30dk6"
+    },
+    {
+      "timestamp": "2026-08-22 05:57:55",
+      "dominantCat": "person",
+      "intruderCat": "dog",
+      "isCorrectSelection": false,
+      "latencyMs": 50,
+      "curvature": 1,
+      "speedVariance": 0,
+      "clickX": 0.5,
+      "clickY": 0.5,
+      "score": 0,
+      "classification": "WRONG_ANSWER",
+      "flags": [
+        "INSTANT_SUBMISSION",
+        "TELEPORT_CURSOR",
+        "GEOMETRIC_CENTROID_CLICK",
+        "UNTRUSTED_EVENT",
+        "WRONG_IMAGE_SELECTED"
+      ],
+      "id": "sess_1787378275722_glcz1t"
+    },
+    {
+      "timestamp": "2026-08-22 05:58:13",
+      "dominantCat": "fruit",
+      "intruderCat": "flower",
+      "isCorrectSelection": true,
+      "latencyMs": 3181,
+      "curvature": 1.32,
+      "speedVariance": 0.59,
+      "clickX": 0.57,
+      "clickY": 0.38,
+      "score": 97,
+      "classification": "HUMAN_VERIFIED",
+      "flags": [],
+      "id": "sess_1787378293190_kplbzh"
     }
   ]
 }
