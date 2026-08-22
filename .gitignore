@@ -5,4 +5,4 @@ Thumbs.db
 *.log
 
 # Dependencies
-# (node_modules is tracked in original repo)
+node_modules/

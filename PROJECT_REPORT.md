@@ -318,21 +318,86 @@ d:\spectrahackathon\
 
 ---
 
-## 10. File-by-File Reference
+## 10. Complete File-by-File Reference
 
-| File | Role |
+### Frontend — Public Portal
+
+| File | Description |
 |---|---|
-| `index.html` | Public visitor portal — presents the CAPTCHA, reads telemetry, shows result overlays, posts to `/api/logs`. Contains the **Simulate Bot** button. |
-| `dashboard.html` | Admin console — shows all-time KPIs, historical log table, CSV export, and real-time polling of the database API. |
-| `captcha-engine.js` | Core engine — generates semantic challenges, renders the grid, attaches tile click handlers, evaluates selection correctness, merges behavioral and correctness scores. |
-| `telemetry.js` | Passive biometric recorder — collects `(x, y, t, speed, dt)` on every `mousemove`, calculates curvature, speed variance, deceleration, and click trust signals. |
-| `bot-detector.js` | Multi-factor heuristic classifier — evaluates timing (25%), curvature (25%), kinematics (20%), spatial click offset (15%), environment integrity (15%). Outputs a 0–100 humanScore. |
-| `server.js` | Node.js HTTP server — serves static files on port 3000, exposes REST API `GET/POST/DELETE /api/logs`, reads/writes `data/database.json` for persistent storage. |
-| `api/logs.js` | Serverless API handler — identical `/api/logs` logic for Vercel/Netlify cloud deployment. |
-| `data/database.json` | Persistent flat-file JSON database — stores all-time KPI counters and every session log entry, survives server restarts and re-deployments. |
-| `style.css` | Light-mode design system — card layouts, CAPTCHA tile grid, camouflage mesh, result overlays, simulate-bot pill, admin table. |
-| `vercel.json` | Vercel deployment config — routes all API calls to serverless `api/logs.js`. |
-| `netlify.toml` | Netlify deployment config — serverless function routing and build settings. |
-| `dataset-manifest.json` | Pre-generated index of all 6,899 image paths across 8 categories for fast random challenge synthesis. |
-| `generate-manifest.js` | One-time script that scans `data/natural_images/` and builds `dataset-manifest.json`. |
-| `PROJECT_REPORT.md` | This document — comprehensive technical whitepaper and presentation defense guide. |
+| [`index.html`](file:///d:/spectrahackathon/index.html) | **Public visitor portal.** The main page visitors see. Renders a 3×3 image grid CAPTCHA challenge, captures user clicks, displays verification result overlays ("You're Verified!" for humans, "Verification Failed" for wrong selections, "Bot Detected" for simulated bots). Contains a **"Simulate Bot"** button in the footer for live demonstration. Posts all session data to the `/api/logs` REST endpoint. Falls back to `localStorage` if server is unreachable. |
+| [`style.css`](file:///d:/spectrahackathon/style.css) | **Global stylesheet for both portals.** Light-mode design system with card layouts, CAPTCHA tile grid styling, camouflage anti-AI mesh overlays, result screen overlays (success/danger), diagnostic boxes, compact telemetry grids, "Simulate Bot" pill button, admin dashboard KPI cards, session log tables, and responsive typography using Google Fonts (Inter, JetBrains Mono). |
+
+---
+
+### Frontend — Admin Console
+
+| File | Description |
+|---|---|
+| [`dashboard.html`](file:///d:/spectrahackathon/dashboard.html) | **Private admin security console.** Displays real-time KPI summary cards (Dataset Images, Wrong Selections, Avg Latency, Total Sessions). Shows a scrollable historical log table of every verification session with columns: Timestamp, Dominant Category, Intruder Category, Correct (Yes/No), Latency (ms), Curvature, Speed Variance, Click X/Y, Score, Verdict, and Flags. Supports one-click **CSV export** of all historical data and a **Clear Logs** button to reset the database. Auto-polls `/api/logs` every 4 seconds for live updates. |
+
+---
+
+### Core JavaScript Modules
+
+| File | Description |
+|---|---|
+| [`captcha-engine.js`](file:///d:/spectrahackathon/captcha-engine.js) | **Challenge generation and evaluation engine.** Imports `TelemetryRecorder` and `BotDetector`. Loads the dataset manifest, selects a random semantic sibling pair (e.g. `fruit` vs `flower`), picks 8 dominant images + 1 intruder, shuffles them into a 3×3 grid, and renders interactive tiles. Handles single-click locking (`_selectionHandled` guard), evaluates whether the user clicked the correct anomaly tile, merges answer correctness with the behavioral bot score (wrong answer = forced 0% score), and fires `onVerifiedCallback` or `onFailedCallback` with the full result payload. |
+| [`telemetry.js`](file:///d:/spectrahackathon/telemetry.js) | **Passive behavioral biometric recorder.** Listens to `mousemove`, `touchmove`, `mousedown`, and `touchstart` events on the document. Captures high-frequency data points `(x, y, timestamp, speed, dt)`. On `getTelemetrySummary()`, computes: total path length, euclidean distance, **curvature ratio** (R = path/euclidean), **speed standard deviation** (σᵥ), average angle change (jitter), **approach deceleration factor** (δ = end speed / mid speed), click coordinates (normalized 0–1), and environment integrity flags (webdriver, phantom, selenium, outer dimensions, untrusted events). |
+| [`bot-detector.js`](file:///d:/spectrahackathon/bot-detector.js) | **Multi-factor heuristic bot classifier.** Receives the telemetry summary and evaluates 5 weighted signal categories: **Timing** (25%) — checks if solve time is < 200ms or > 30s; **Curvature** (25%) — checks if path is too straight (< 1.02 ratio); **Kinematics** (20%) — checks speed variance and deceleration profile; **Spatial Click** (15%) — checks if click landed exactly at tile center (0.5, 0.5); **Environment** (15%) — checks for webdriver, automation frameworks, untrusted DOM events. Outputs a 0–100 `humanScore`, boolean `isHuman` (threshold: 55%), `classification` string, and arrays of `flags` and `penalties` for diagnostic display. |
+
+---
+
+### Firebase Authentication (Admin Login)
+
+| File | Description |
+|---|---|
+| [`firebase-config.js`](file:///d:/spectrahackathon/firebase-config.js) | **Firebase SDK initialization.** Imports `initializeApp` from the Firebase CDN (v10.7.1). Configures the Firebase project `securityshield-26d3a` with API key, auth domain, project ID, storage bucket, messaging sender ID, app ID, and measurement ID. Exports the initialized `app` instance for use by `auth.js`. |
+| [`auth.js`](file:///d:/spectrahackathon/auth.js) | **Firebase authentication flow with CAPTCHA step-up.** Implements a login form handler that intercepts form submission, stores pending credentials (email + password), and triggers a CAPTCHA challenge modal. On successful CAPTCHA verification (`onVerifiedCallback`), authenticates the user via Firebase `signInWithEmailAndPassword()`. On Firebase auth failure (e.g. offline or no Firebase project configured), falls back to `localStorage` session storage for prototype continuity. On CAPTCHA failure or bot detection, re-renders a fresh challenge and displays an error message. Redirects to `dashboard.html` on successful authentication. |
+
+---
+
+### Server & API
+
+| File | Description |
+|---|---|
+| [`server.js`](file:///d:/spectrahackathon/server.js) | **Node.js HTTP server.** Serves all static files (HTML, CSS, JS, images) on port 3000. Exposes 3 REST API endpoints: `GET /api/logs` — returns the full database (all-time KPI counters + historical log array); `POST /api/logs` — receives a session entry, appends it to the logs array, recalculates all-time KPI counters (totalSessions, humansVerified, botsBlocked, wrongSelections, avgLatencyMs), and writes to `data/database.json`; `DELETE /api/logs` — resets the database to empty state. Automatically creates the `data/` directory and `database.json` file if they don't exist. |
+| [`api/logs.js`](file:///d:/spectrahackathon/api/logs.js) | **Serverless API handler.** Identical REST logic to the `/api/logs` routes in `server.js`, but packaged as a single exported function compatible with Vercel serverless functions and Netlify Functions. Handles GET, POST, and DELETE methods. Used when deploying to serverless platforms instead of a persistent Node server. |
+
+---
+
+### Data & Database
+
+| File | Description |
+|---|---|
+| `data/natural_images/` | **Image dataset directory.** Contains 6,899 natural photographs organized into 8 subdirectories: `airplane/`, `car/`, `cat/`, `dog/`, `flower/`, `fruit/`, `motorbike/`, `person/`. Each image is a `.jpg` file named `{category}_{0000}.jpg`. These images are served directly by the Node server and randomly selected by `captcha-engine.js` to build each 3×3 challenge grid. |
+| [`data/database.json`](file:///d:/spectrahackathon/data/database.json) | **Persistent flat-file JSON database.** Stores all-time aggregate KPI counters (`totalSessions`, `humansVerified`, `botsBlocked`, `wrongSelections`, `avgLatencyMs`) and a `logs` array containing every individual session record. Each log entry includes: `id`, `timestamp`, `dominantCat`, `intruderCat`, `isCorrectSelection`, `latencyMs`, `curvature`, `speedVariance`, `clickX`, `clickY`, `score`, `classification`, and `flags`. Persists across server restarts. |
+| [`dataset-manifest.json`](file:///d:/spectrahackathon/dataset-manifest.json) | **Pre-generated image index.** A JSON file mapping each category name to an array of relative file paths for every image in that category. Generated by `generate-manifest.js`. Used by `captcha-engine.js` at runtime to randomly select images without needing to scan the filesystem. Contains paths for all 6,899 images across 8 categories. |
+
+---
+
+### Build, Test & Config
+
+| File | Description |
+|---|---|
+| [`package.json`](file:///d:/spectrahackathon/package.json) | **Node.js project manifest.** Defines project name (`aegis-security`), version (`1.0.0`), ES module mode (`"type": "module"`). Scripts: `start` → `node server.js`, `manifest` → `node generate-manifest.js`, `test` → `node test-captcha.js`. Dependency: `firebase` (v12.18.0). |
+| [`package-lock.json`](file:///d:/spectrahackathon/package-lock.json) | **Dependency lock file.** Auto-generated by npm. Locks the exact versions of all transitive dependencies for reproducible builds. |
+| [`generate-manifest.js`](file:///d:/spectrahackathon/generate-manifest.js) | **One-time build script.** Recursively scans `data/natural_images/` for all `.jpg` files, groups them by parent directory name (category), counts totals, and writes the result to `dataset-manifest.json`. Run via `npm run manifest`. |
+| [`test-captcha.js`](file:///d:/spectrahackathon/test-captcha.js) | **Automated test suite.** Runs 3 tests against the `BotDetector` module: (1) Instant Teleport Bot — 19ms duration, 1 data point, expects BOT_DETECTED with score ≤ 20%; (2) Linear Interpolation Bot — 300ms, curvature 1.0, zero speed variance, expects BOT_DETECTED; (3) Natural Human Interaction — 2100ms, curvature 1.225, deceleration 0.65, expects human verified with score ≥ 75%. Run via `npm test`. |
+| [`.gitignore`](file:///d:/spectrahackathon/.gitignore) | **Git ignore rules.** Excludes OS-generated files (.DS_Store, Thumbs.db), temp files (*.tmp, *.log), and `node_modules/` from version control. |
+
+---
+
+### Deployment Configs
+
+| File | Description |
+|---|---|
+| [`vercel.json`](file:///d:/spectrahackathon/vercel.json) | **Vercel deployment config.** Routes all requests matching `/api/logs` to the serverless function at `api/logs.js`. All other requests are served as static files. |
+| [`netlify.toml`](file:///d:/spectrahackathon/netlify.toml) | **Netlify deployment config.** Sets the functions directory to `api/`, publish directory to root (`./`), and configures redirect rules to route `/api/logs` to the Netlify Function. |
+
+---
+
+### Documentation
+
+| File | Description |
+|---|---|
+| [`PROJECT_REPORT.md`](file:///d:/spectrahackathon/PROJECT_REPORT.md) | **This document.** Comprehensive technical whitepaper and presentation defense guide. Covers the elevator pitch, system architecture, mathematical formulations for all biometric signals (R, σᵥ, δ, S), threat detection matrix, complete file-by-file reference, live demonstration script (3 acts), and Q&A defense against common panel questions. |
