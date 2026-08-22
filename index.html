@@ -105,7 +105,7 @@
         <!-- FOOTER -->
         <footer class="portal-footer">
             <span>Visual Security Verification</span>
-            <span style="color: #94a3b8;">Protected</span>
+            <button id="simulateBotBtn" class="simulate-bot-pill" title="Simulate an automated bot attack for testing">Simulate Bot</button>
         </footer>
 
     </div>
@@ -228,6 +228,64 @@
 
         document.getElementById('retryAfterBotBtn').addEventListener('click', () => {
             initPortal();
+        });
+
+        /**
+         * BOT SIMULATOR
+         * Injects a fake automated session:
+         *  - Skips all real mouse-movement recording
+         *  - Uses near-instant click timing (50ms reaction)
+         *  - Clicks a wrong (dominant) tile, never the anomaly
+         *  - Sends the fake telemetry through the full engine pipeline
+         *  - Result gets saved to the database, just like a real session
+         */
+        document.getElementById('simulateBotBtn').addEventListener('click', async () => {
+            // Reset portal first so we have a fresh challenge
+            botOverlay.classList.remove('active');
+            humanOverlay.classList.remove('active');
+            await engine.init();
+            engine.render(mount, { gridSize: 9, difficulty: 'hard', camouflage: true });
+
+            // Let images render for a moment, then attack
+            setTimeout(() => {
+                const challenge = engine.currentChallenge;
+                if (!challenge) return;
+
+                // Pick a WRONG tile (any tile that is NOT the anomaly)
+                const wrongIndices = challenge.items
+                    .map((item, idx) => idx)
+                    .filter(idx => idx !== challenge.targetIndex);
+                const botTargetIdx = wrongIndices[Math.floor(Math.random() * wrongIndices.length)];
+
+                // Inject synthetic bot telemetry directly into the recorder
+                // Overwrite with zero-variance, perfectly straight, instant data
+                const rec = engine.telemetryRecorder;
+                rec.startTime    = Date.now() - 50;   // 50ms total session
+                rec.clickTime    = Date.now();
+                rec.firstMoveTime = Date.now() - 50;
+                rec.isRecording  = false;
+                rec.untrustedEventsCount = 5;          // programmatic events = untrusted
+                rec.trustedEventsCount   = 0;
+                rec.points = [
+                    { x: 100, y: 100, t: rec.startTime,      speed: 0,    dt: 0  },
+                    { x: 500, y: 500, t: rec.startTime + 50, speed: 9999, dt: 50 }
+                ];
+                rec.clicks = [{
+                    x: 500, y: 500,
+                    t: rec.clickTime,
+                    isTrusted: false,
+                    normalizedX: 0.5,
+                    normalizedY: 0.5,
+                    targetTagName: 'DIV'
+                }];
+
+                // Visually highlight the bot-selected tile briefly
+                const tileEl = mount.querySelector(`[data-index="${botTargetIdx}"]`);
+                if (tileEl) tileEl.style.outline = '3px solid #dc2626';
+
+                // Fire the engine's selection handler with the wrong tile
+                engine._handleSelection(botTargetIdx, tileEl);
+            }, 400);
         });
 
         // Initialize on page load

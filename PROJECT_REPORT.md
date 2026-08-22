@@ -272,15 +272,67 @@ d:\spectrahackathon\
 3. Move the cursor naturally across the grid, inspect the images, and click the intruder (e.g., an orange among apples).
 4. Show the **"You're Verified!"** confirmation screen showing smooth human trajectory and latency.
 
-### Act 2: Simulating Automated Bot Attacks (Browser DevTools)
-1. On `index.html`, press **`F12`** and navigate to the **Console**.
-2. Run the **Instant Bot Attack Payload**:
-   ```javascript
-   document.querySelector('.captcha-tile').dispatchEvent(new MouseEvent('click', { bubbles: true }));
-   ```
-3. **Explain to Audience**: *"The instant script executed in under 10 milliseconds. AEGIS immediately detected the superhuman solve time, absence of mouse movement, and synthetic event signal, displaying the lockdown screen."*
+### Act 2: Simulating Automated Bot Attacks (Built-In Simulator)
+
+> **New Feature**: A **"Simulate Bot"** button is now built directly into the public portal footer — no DevTools or console required.
+
+**How It Works:**
+
+1. Open **`http://localhost:3000/index.html`**.
+2. Click the **`Simulate Bot`** pill in the bottom-right corner of the portal.
+3. AEGIS will:
+   - Instantly reset and generate a fresh challenge grid.
+   - After 400ms, **programmatically click a wrong (non-anomaly) tile** without any real mouse movement.
+   - Inject synthetic telemetry data that mimics a bot:
+     - **Reaction Time**: ~50ms (superhuman, far below the 200ms human minimum).
+     - **Curvature Ratio**: Perfectly straight line (≈ 1.0 vs. human ≥ 1.05).
+     - **Speed Variance (σᵥ)**: Near-zero (bots move at constant velocity).
+     - **Untrusted Event Count**: 5 untrusted DOM events (programmatic click, not genuine user input).
+     - **Wrong Image Selected**: Forces 0% score override regardless of movement quality.
+4. AEGIS immediately shows the **"Verification Failed"** lockdown screen with the full diagnostic breakdown.
+5. The simulated session is **permanently stored in the database** and appears in the admin console with all flags set: `BOT_SPEED`, `STRAIGHT_PATH`, `UNTRUSTED_EVENTS`, `WRONG_IMAGE_SELECTED`.
+
+**What the Audience Sees:**
+
+- *"Watch — I click Simulate Bot. In 400 milliseconds, AEGIS has already detected this as automated: instant reaction time, zero cursor curvature, synthetic DOM events, and the wrong image selected. Every signal that a human would naturally produce is completely absent."*
+- Open `dashboard.html` alongside the portal to show the bot session appear in real time.
+
+**Technical Details of Injected Bot Telemetry:**
+
+| Signal | Bot-Simulated Value | Human Threshold |
+|---|---|---|
+| Total Duration | 50 ms | > 500 ms |
+| Path Curvature | 1.0 (perfect line) | > 1.05 |
+| Speed Variance (σᵥ) | ~0 | > 0.3 |
+| Untrusted Events | 5 | 0 |
+| isTrusted Click | `false` | `true` |
+| Correct Selection | No | Yes |
+| Final Score | 0% | > 70% |
+
+---
 
 ### Act 3: The Security Admin Command Center (Dashboard)
 1. Open **`http://localhost:3000/dashboard.html`**.
 2. **Explain to Audience**: *"Here is the admin console. Notice how our live human pass and the simulated bot attack were both automatically synced in real time with complete kinematic metrics (Latency, Curvature, Velocity Variance, Click Coordinates, and Heuristic Flags)."*
 3. Click **"Export CSV"** to demonstrate one-click audit log extraction for enterprise compliance.
+
+---
+
+## 10. File-by-File Reference
+
+| File | Role |
+|---|---|
+| `index.html` | Public visitor portal — presents the CAPTCHA, reads telemetry, shows result overlays, posts to `/api/logs`. Contains the **Simulate Bot** button. |
+| `dashboard.html` | Admin console — shows all-time KPIs, historical log table, CSV export, and real-time polling of the database API. |
+| `captcha-engine.js` | Core engine — generates semantic challenges, renders the grid, attaches tile click handlers, evaluates selection correctness, merges behavioral and correctness scores. |
+| `telemetry.js` | Passive biometric recorder — collects `(x, y, t, speed, dt)` on every `mousemove`, calculates curvature, speed variance, deceleration, and click trust signals. |
+| `bot-detector.js` | Multi-factor heuristic classifier — evaluates timing (25%), curvature (25%), kinematics (20%), spatial click offset (15%), environment integrity (15%). Outputs a 0–100 humanScore. |
+| `server.js` | Node.js HTTP server — serves static files on port 3000, exposes REST API `GET/POST/DELETE /api/logs`, reads/writes `data/database.json` for persistent storage. |
+| `api/logs.js` | Serverless API handler — identical `/api/logs` logic for Vercel/Netlify cloud deployment. |
+| `data/database.json` | Persistent flat-file JSON database — stores all-time KPI counters and every session log entry, survives server restarts and re-deployments. |
+| `style.css` | Light-mode design system — card layouts, CAPTCHA tile grid, camouflage mesh, result overlays, simulate-bot pill, admin table. |
+| `vercel.json` | Vercel deployment config — routes all API calls to serverless `api/logs.js`. |
+| `netlify.toml` | Netlify deployment config — serverless function routing and build settings. |
+| `dataset-manifest.json` | Pre-generated index of all 6,899 image paths across 8 categories for fast random challenge synthesis. |
+| `generate-manifest.js` | One-time script that scans `data/natural_images/` and builds `dataset-manifest.json`. |
+| `PROJECT_REPORT.md` | This document — comprehensive technical whitepaper and presentation defense guide. |

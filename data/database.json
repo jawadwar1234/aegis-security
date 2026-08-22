@@ -1,11 +1,11 @@
 {
-  "totalSessions": 2,
-  "humansVerified": 1,
+  "totalSessions": 4,
+  "humansVerified": 2,
   "botsBlocked": 0,
-  "wrongSelections": 1,
-  "avgLatencyMs": 2262,
+  "wrongSelections": 2,
+  "avgLatencyMs": 2388,
   "createdAt": "2026-08-22T05:29:24.201Z",
-  "lastUpdated": "2026-08-22T05:31:04.156Z",
+  "lastUpdated": "2026-08-22T05:42:16.370Z",
   "logs": [
     {
       "timestamp": "2026-08-22 05:30:45",
@@ -38,6 +38,38 @@
         "WRONG_IMAGE_SELECTED"
       ],
       "id": "sess_1787376664156_q60t1k"
+    },
+    {
+      "timestamp": "2026-08-22 05:42:10",
+      "dominantCat": "flower",
+      "intruderCat": "fruit",
+      "isCorrectSelection": true,
+      "latencyMs": 2241,
+      "curvature": 1.07,
+      "speedVariance": 1.84,
+      "clickX": 0.2,
+      "clickY": 0.37,
+      "score": 100,
+      "classification": "HUMAN_VERIFIED",
+      "flags": [],
+      "id": "sess_1787377330352_ehjs3o"
+    },
+    {
+      "timestamp": "2026-08-22 05:42:16",
+      "dominantCat": "dog",
+      "intruderCat": "cat",
+      "isCorrectSelection": false,
+      "latencyMs": 2787,
+      "curvature": 1.36,
+      "speedVariance": 2.21,
+      "clickX": 0.8,
+      "clickY": 0.82,
+      "score": 0,
+      "classification": "WRONG_ANSWER",
+      "flags": [
+        "WRONG_IMAGE_SELECTED"
+      ],
+      "id": "sess_1787377336369_b30dk6"
     }
   ]
 }
