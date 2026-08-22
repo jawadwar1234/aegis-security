@@ -1,10 +1,43 @@
 {
-  "totalSessions": 0,
-  "humansVerified": 0,
+  "totalSessions": 2,
+  "humansVerified": 1,
   "botsBlocked": 0,
-  "wrongSelections": 0,
-  "avgLatencyMs": 0,
+  "wrongSelections": 1,
+  "avgLatencyMs": 2262,
   "createdAt": "2026-08-22T05:29:24.201Z",
-  "lastUpdated": "2026-08-22T05:29:24.202Z",
-  "logs": []
+  "lastUpdated": "2026-08-22T05:31:04.156Z",
+  "logs": [
+    {
+      "timestamp": "2026-08-22 05:30:45",
+      "dominantCat": "airplane",
+      "intruderCat": "car",
+      "isCorrectSelection": true,
+      "latencyMs": 2432,
+      "curvature": 1.74,
+      "speedVariance": 1.2,
+      "clickX": 0.25,
+      "clickY": 0.28,
+      "score": 100,
+      "classification": "HUMAN_VERIFIED",
+      "flags": [],
+      "id": "sess_1787376645131_f9wvnu"
+    },
+    {
+      "timestamp": "2026-08-22 05:31:04",
+      "dominantCat": "airplane",
+      "intruderCat": "car",
+      "isCorrectSelection": false,
+      "latencyMs": 2092,
+      "curvature": 1.01,
+      "speedVariance": 2.73,
+      "clickX": 0.52,
+      "clickY": 0.57,
+      "score": 0,
+      "classification": "WRONG_ANSWER",
+      "flags": [
+        "WRONG_IMAGE_SELECTED"
+      ],
+      "id": "sess_1787376664156_q60t1k"
+    }
+  ]
 }
