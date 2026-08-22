@@ -609,12 +609,34 @@
 
     <script>
         const LOG_KEY = 'aegis_session_log';
+        let logEntries = [];
 
-        function loadLog() {
+        function loadLocalCache() {
             try { return JSON.parse(localStorage.getItem(LOG_KEY)) || []; } catch { return []; }
         }
 
-        let logEntries = loadLog();
+        // ── Load All-Time Stats from Persistent Server Database ──
+        async function fetchDatabaseLogs() {
+            try {
+                const res = await fetch('/api/logs');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && Array.isArray(data.logs)) {
+                        logEntries = data.logs;
+                        // Update local cache
+                        localStorage.setItem(LOG_KEY, JSON.stringify(logEntries));
+                        renderLog();
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.warn('AEGIS: Fetching from server database failed, using local cache.', err);
+            }
+
+            // Fallback to local cache if offline
+            logEntries = loadLocalCache();
+            renderLog();
+        }
 
         // ── Verdict badge HTML (Clean text, no ticks or cross marks) ──
         function verdictBadge(entry) {
@@ -715,14 +737,19 @@
         // ── Synchronize with Public Portal Activity ──
         window.addEventListener('storage', (e) => {
             if (e.key === LOG_KEY) {
-                logEntries = loadLog();
-                renderLog();
+                fetchDatabaseLogs();
             }
         });
 
+        // Periodic background poll to keep stats live
+        setInterval(fetchDatabaseLogs, 4000);
+
         // ── Button Handlers ──
-        document.getElementById('clearLogBtn').addEventListener('click', () => {
-            if (confirm('Are you sure you want to clear all stored session logs?')) {
+        document.getElementById('clearLogBtn').addEventListener('click', async () => {
+            if (confirm('Are you sure you want to reset all stored database logs?')) {
+                try {
+                    await fetch('/api/logs', { method: 'DELETE' });
+                } catch (e) {}
                 logEntries = [];
                 localStorage.removeItem(LOG_KEY);
                 renderLog();
@@ -755,12 +782,12 @@
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `aegis_security_logs_${new Date().toISOString().slice(0, 10)}.csv`;
+            link.download = `aegis_security_database_export_${new Date().toISOString().slice(0, 10)}.csv`;
             link.click();
         });
 
         window.addEventListener('DOMContentLoaded', () => {
-            renderLog();
+            fetchDatabaseLogs();
         });
     </script>
 </body>

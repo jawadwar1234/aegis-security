@@ -37,36 +37,46 @@
             <!-- CAPTCHA MOUNT POINT -->
             <div id="captchaMount"></div>
 
-            <!-- RESULT SCREEN: BOT DETECTED OVERLAY -->
+            <!-- RESULT SCREEN: BOT DETECTED OVERLAY (NO RETRY BUTTON) -->
             <div class="verification-result-overlay bot-result" id="botDetectedOverlay">
                 <div class="result-icon danger">✕</div>
                 <h2 class="result-title text-danger">Verification Failed</h2>
-                <p class="result-subtitle">We noticed automated or unnatural click behavior. Please try again normally.</p>
+                <p class="result-subtitle">Automated or unnatural activity was detected.</p>
                 
                 <div class="diagnostic-box">
                     <div class="diag-header">
-                        <span>Why this happened</span>
-                        <span id="botScorePill" class="score-pill danger">Bot Flagged</span>
+                        <span>Check Summary</span>
+                        <span id="botScorePill" class="score-pill danger">Flagged</span>
+                    </div>
+                    <div class="telemetry-compact-grid" style="margin-bottom: 10px;">
+                        <div class="comp-stat">
+                            <span class="comp-label">Time Taken</span>
+                            <strong id="botStatLatency" style="color:#dc2626;">-- s</strong>
+                        </div>
+                        <div class="comp-stat">
+                            <span class="comp-label">Score</span>
+                            <strong id="botStatScore" style="color:#dc2626;">0%</strong>
+                        </div>
+                        <div class="comp-stat">
+                            <span class="comp-label">Status</span>
+                            <strong style="color:#dc2626;">Blocked</strong>
+                        </div>
                     </div>
                     <ul id="botReasonsList" class="diag-reasons-list">
                         <!-- Populated dynamically -->
                     </ul>
                 </div>
-
-                <div class="result-actions">
-                    <button id="retryAfterBotBtn" class="portal-btn retry-btn">Try Again</button>
-                </div>
             </div>
 
-            <!-- RESULT SCREEN: HUMAN VERIFIED OVERLAY -->
+            <!-- RESULT SCREEN: HUMAN VERIFIED OVERLAY (NO RETRY BUTTON) -->
             <div class="verification-result-overlay human-result" id="humanVerifiedOverlay">
                 <div class="result-icon success">✓</div>
                 <h2 class="result-title text-success">You're Verified!</h2>
-                <p class="result-subtitle">Thank you. Your human response and selection have been confirmed.</p>
+                <p class="result-subtitle">Human response and selection confirmed. Thank you.</p>
                 
                 <div class="diagnostic-box success-box">
                     <div class="diag-header">
-                        <span>Check Details</span>
+                        <span>Verification Details</span>
                         <span id="humanScorePill" class="score-pill success">Verified Human</span>
                     </div>
                     <div class="telemetry-compact-grid">
@@ -84,18 +94,14 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="result-actions">
-                    <button id="tryAnotherChallengeBtn" class="portal-btn success-btn">Try Another One</button>
-                </div>
             </div>
 
         </main>
 
-        <!-- FOOTER (SIMPLE, NO ADMIN REDIRECTS) -->
+        <!-- FOOTER -->
         <footer class="portal-footer">
             <span>Visual Security Verification</span>
-            <span style="color: #64748b;">Protected</span>
+            <span style="color: #94a3b8;">Protected</span>
         </footer>
 
     </div>
@@ -110,10 +116,10 @@
         const botScorePill = document.getElementById('botScorePill');
         const humanScorePill = document.getElementById('humanScorePill');
 
-        // ─── Persist each session to localStorage for admin dashboard ───
         const LOG_KEY = 'aegis_session_log';
 
-        function saveSessionToLog(result) {
+        // ─── Save to Persistent Database API & LocalStorage ───
+        async function saveSessionToDatabase(result) {
             try {
                 const bot = result.botAnalysis || {};
                 const metrics = bot.metrics || {};
@@ -137,13 +143,25 @@
                     flags: diagnostics.flags || []
                 };
 
+                // 1. Save to client localStorage cache
                 let existing = [];
                 try { existing = JSON.parse(localStorage.getItem(LOG_KEY)) || []; } catch { existing = []; }
                 existing.push(entry);
                 if (existing.length > 500) existing = existing.slice(-500);
                 localStorage.setItem(LOG_KEY, JSON.stringify(existing));
+
+                // 2. Persist to server database permanently via REST API
+                try {
+                    await fetch('/api/logs', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(entry)
+                    });
+                } catch (apiErr) {
+                    console.warn('AEGIS: Server API offline, saved to localStorage cache.', apiErr);
+                }
             } catch (err) {
-                console.warn('AEGIS: Failed to save session log entry:', err);
+                console.warn('AEGIS: Failed to save session entry:', err);
             }
         }
 
@@ -162,7 +180,7 @@
 
         // Handle Human Verification Success
         engine.onVerifiedCallback = (result) => {
-            saveSessionToLog(result);
+            saveSessionToDatabase(result);
             const bot = result.botAnalysis;
             humanScorePill.textContent = `Verified Human (${bot.humanScore}%)`;
             const seconds = (bot.metrics.durationMs / 1000).toFixed(1);
@@ -177,9 +195,14 @@
 
         // Handle Bot Detection / Failure
         engine.onFailedCallback = (result) => {
-            saveSessionToLog(result);
+            saveSessionToDatabase(result);
             const bot = result.botAnalysis;
             botScorePill.textContent = `Flagged (${bot.humanScore}% Score)`;
+            
+            const seconds = (bot.metrics.durationMs / 1000).toFixed(1);
+            document.getElementById('botStatLatency').textContent = `${seconds}s`;
+            document.getElementById('botStatScore').textContent = `${bot.humanScore}%`;
+            
             botReasonsList.innerHTML = '';
 
             if (bot.diagnostics.penalties.length > 0) {
@@ -198,14 +221,6 @@
                 botOverlay.classList.add('active');
             }, 250);
         };
-
-        document.getElementById('retryAfterBotBtn').addEventListener('click', () => {
-            initPortal();
-        });
-
-        document.getElementById('tryAnotherChallengeBtn').addEventListener('click', () => {
-            initPortal();
-        });
 
         // Initialize on page load
         window.addEventListener('DOMContentLoaded', () => {
