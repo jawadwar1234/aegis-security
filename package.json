@@ -1,4 +1,12 @@
 {
+  "name": "aegis-security",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "manifest": "node generate-manifest.js",
+    "test": "node test-captcha.js"
+  },
   "dependencies": {
     "firebase": "^12.18.0"
   }
