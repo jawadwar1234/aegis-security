@@ -12,7 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* ─── Dashboard-Specific Overrides ─── */
         .db-body {
             background: #020617;
             min-height: 100vh;
@@ -56,23 +55,10 @@
             box-shadow: 0 0 10px rgba(59,130,246,0.4);
         }
 
-        .db-logo strong {
-            font-size: 15px;
-            letter-spacing: 1px;
-            color: #f1f5f9;
-        }
+        .db-logo strong { font-size: 15px; letter-spacing: 1px; color: #f1f5f9; }
+        .db-logo span { font-size: 11px; color: #64748b; margin-left: 4px; }
 
-        .db-logo span {
-            font-size: 11px;
-            color: #64748b;
-            margin-left: 4px;
-        }
-
-        .db-topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
+        .db-topbar-right { display: flex; align-items: center; gap: 16px; }
 
         .db-live-pill {
             display: flex;
@@ -98,38 +84,23 @@
             border: 1px solid rgba(255,255,255,0.1);
             transition: all 0.2s;
         }
-
-        .db-nav-link:hover {
-            background: rgba(255,255,255,0.05);
-            color: #f1f5f9;
-        }
+        .db-nav-link:hover { background: rgba(255,255,255,0.05); color: #f1f5f9; }
 
         /* Page Layout */
-        .db-content {
+        .db-content { padding: 24px 28px; flex: 1; display: flex; flex-direction: column; gap: 20px; }
+
+        /* Stats row */
+        .db-stats-row {
             display: grid;
-            grid-template-columns: 360px 1fr;
-            gap: 20px;
-            padding: 24px 28px;
-            flex: 1;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
         }
 
-        @media (max-width: 1000px) {
-            .db-content { grid-template-columns: 1fr; }
-        }
-
-        /* ─── Left Column ─── */
-        .db-left {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        /* Stat card */
         .db-stat-card {
             background: rgba(15, 23, 42, 0.7);
             border: 1px solid rgba(59, 130, 246, 0.2);
             border-radius: 12px;
-            padding: 18px 20px;
+            padding: 16px 20px;
         }
 
         .db-stat-label {
@@ -138,105 +109,13 @@
             letter-spacing: 1px;
             color: #64748b;
             text-transform: uppercase;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
-        .db-stat-value {
-            font-size: 28px;
-            font-weight: 800;
-            color: #f1f5f9;
-            line-height: 1;
-        }
+        .db-stat-value { font-size: 26px; font-weight: 800; color: #f1f5f9; line-height: 1; }
+        .db-stat-sub { font-size: 11px; color: #10b981; margin-top: 4px; }
 
-        .db-stat-sub {
-            font-size: 11px;
-            color: #10b981;
-            margin-top: 4px;
-        }
-
-        /* Summary counters */
-        .db-counters {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .db-counter {
-            background: rgba(15,23,42,0.6);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 10px;
-            padding: 14px;
-            text-align: center;
-        }
-
-        .db-counter-num {
-            display: block;
-            font-size: 22px;
-            font-weight: 800;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .db-counter-label {
-            display: block;
-            font-size: 10px;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 2px;
-        }
-
-        /* CAPTCHA preview card */
-        .db-grid-card {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 12px;
-            overflow: hidden;
-            flex: 1;
-        }
-
-        .db-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-
-        .db-card-title {
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: #94a3b8;
-            text-transform: uppercase;
-        }
-
-        .db-refresh-btn {
-            background: rgba(59,130,246,0.1);
-            border: 1px solid rgba(59,130,246,0.25);
-            color: #38bdf8;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 4px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .db-refresh-btn:hover {
-            background: rgba(59,130,246,0.2);
-        }
-
-        .db-grid-mount {
-            padding: 12px;
-        }
-
-        /* ─── Right Column: Log Table ─── */
-        .db-right {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
+        /* Log Card */
         .db-log-card {
             background: rgba(15, 23, 42, 0.7);
             border: 1px solid rgba(59, 130, 246, 0.2);
@@ -255,17 +134,8 @@
             border-bottom: 1px solid rgba(255,255,255,0.06);
         }
 
-        .db-log-title-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .db-log-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: #f1f5f9;
-        }
+        .db-log-title-group { display: flex; align-items: center; gap: 10px; }
+        .db-log-title { font-size: 13px; font-weight: 700; color: #f1f5f9; }
 
         .db-log-count {
             background: rgba(59,130,246,0.15);
@@ -277,10 +147,7 @@
             border-radius: 10px;
         }
 
-        .db-log-actions {
-            display: flex;
-            gap: 8px;
-        }
+        .db-log-actions { display: flex; gap: 8px; }
 
         .db-action-btn {
             background: rgba(30,41,59,0.8);
@@ -293,33 +160,13 @@
             cursor: pointer;
             transition: all 0.2s;
         }
+        .db-action-btn:hover { background: rgba(255,255,255,0.06); color: #f1f5f9; }
+        .db-action-btn.export { color: #10b981; border-color: rgba(16,185,129,0.25); }
 
-        .db-action-btn:hover {
-            background: rgba(255,255,255,0.06);
-            color: #f1f5f9;
-        }
+        .db-table-wrap { overflow-x: auto; flex: 1; }
 
-        .db-action-btn.export {
-            color: #10b981;
-            border-color: rgba(16,185,129,0.25);
-        }
-
-        /* Table */
-        .db-table-wrap {
-            overflow-x: auto;
-            flex: 1;
-        }
-
-        .db-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-        }
-
-        .db-table thead tr {
-            background: rgba(0,0,0,0.3);
-        }
-
+        .db-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .db-table thead tr { background: rgba(0,0,0,0.3); }
         .db-table th {
             padding: 10px 14px;
             text-align: left;
@@ -331,7 +178,6 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
             white-space: nowrap;
         }
-
         .db-table td {
             padding: 10px 14px;
             border-bottom: 1px solid rgba(255,255,255,0.04);
@@ -340,77 +186,41 @@
             font-size: 11px;
             white-space: nowrap;
         }
-
-        .db-table tbody tr:hover {
-            background: rgba(59,130,246,0.05);
-        }
+        .db-table tbody tr:hover { background: rgba(59,130,246,0.05); }
 
         .db-verdict-human {
-            display: inline-block;
-            padding: 2px 10px;
-            background: rgba(16,185,129,0.15);
-            border: 1px solid rgba(16,185,129,0.3);
-            color: #10b981;
-            border-radius: 10px;
-            font-size: 10px;
-            font-weight: 700;
+            display: inline-block; padding: 2px 10px;
+            background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3);
+            color: #10b981; border-radius: 10px; font-size: 10px; font-weight: 700;
         }
-
         .db-verdict-bot {
-            display: inline-block;
-            padding: 2px 10px;
-            background: rgba(239,68,68,0.15);
-            border: 1px solid rgba(239,68,68,0.3);
-            color: #ef4444;
-            border-radius: 10px;
-            font-size: 10px;
-            font-weight: 700;
+            display: inline-block; padding: 2px 10px;
+            background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3);
+            color: #ef4444; border-radius: 10px; font-size: 10px; font-weight: 700;
         }
-
         .db-verdict-suspicious {
-            display: inline-block;
-            padding: 2px 10px;
-            background: rgba(245,158,11,0.15);
-            border: 1px solid rgba(245,158,11,0.3);
-            color: #f59e0b;
-            border-radius: 10px;
-            font-size: 10px;
-            font-weight: 700;
+            display: inline-block; padding: 2px 10px;
+            background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3);
+            color: #f59e0b; border-radius: 10px; font-size: 10px; font-weight: 700;
+        }
+        .db-verdict-wrong {
+            display: inline-block; padding: 2px 10px;
+            background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.3);
+            color: #a855f7; border-radius: 10px; font-size: 10px; font-weight: 700;
         }
 
-        .db-score-bar-wrap {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
+        .db-score-bar-wrap { display: flex; align-items: center; gap: 6px; }
         .db-score-mini-bar {
-            width: 60px;
-            height: 5px;
-            background: rgba(255,255,255,0.08);
-            border-radius: 3px;
-            overflow: hidden;
+            width: 60px; height: 5px;
+            background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden;
         }
-
-        .db-score-mini-fill {
-            height: 100%;
-            border-radius: 3px;
-        }
+        .db-score-mini-fill { height: 100%; border-radius: 3px; }
 
         .db-empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #475569;
+            text-align: center; padding: 60px 20px; color: #475569;
         }
-
-        .db-empty-state .empty-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
-        }
-
-        .db-empty-state p {
-            font-size: 13px;
-        }
+        .db-empty-state .empty-icon { font-size: 32px; margin-bottom: 12px; }
+        .db-empty-state p { font-size: 13px; }
     </style>
 </head>
 
@@ -425,7 +235,6 @@
                 <span>/ Admin Console</span>
             </div>
         </div>
-
         <div class="db-topbar-right">
             <div class="db-live-pill">
                 <span class="dot-pulse"></span>
@@ -439,87 +248,77 @@
     <!-- MAIN CONTENT -->
     <div class="db-content">
 
-        <!-- LEFT COLUMN: Stats + CAPTCHA Grid Preview -->
-        <div class="db-left">
-
-            <!-- Dataset Stat -->
+        <!-- STATS ROW -->
+        <div class="db-stats-row">
             <div class="db-stat-card">
-                <p class="db-stat-label">Total Dataset Images</p>
-                <div class="db-stat-value" id="totalImagesCount">6,899</div>
-                <p class="db-stat-sub">↑ 8 natural image categories</p>
+                <p class="db-stat-label">Dataset Images</p>
+                <div class="db-stat-value">6,899</div>
+                <p class="db-stat-sub">↑ 8 image categories</p>
             </div>
-
-            <!-- Session Summary Counters -->
-            <div class="db-counters">
-                <div class="db-counter">
-                    <span class="db-counter-num" id="counterHuman" style="color: #10b981;">0</span>
-                    <span class="db-counter-label">Humans Verified</span>
-                </div>
-                <div class="db-counter">
-                    <span class="db-counter-num" id="counterBot" style="color: #ef4444;">0</span>
-                    <span class="db-counter-label">Bots Blocked</span>
-                </div>
-                <div class="db-counter">
-                    <span class="db-counter-num" id="counterAvgLatency" style="color: #38bdf8;">--</span>
-                    <span class="db-counter-label">Avg Latency (ms)</span>
-                </div>
-                <div class="db-counter">
-                    <span class="db-counter-num" id="counterTotal" style="color: #94a3b8;">0</span>
-                    <span class="db-counter-label">Total Sessions</span>
-                </div>
+            <div class="db-stat-card">
+                <p class="db-stat-label">Humans Verified</p>
+                <div class="db-stat-value" id="counterHuman" style="color:#10b981;">0</div>
+                <p class="db-stat-sub" id="humanPct">— of total</p>
             </div>
-
-            <!-- CAPTCHA Live Preview Grid -->
-            <div class="db-grid-card" style="flex: 1;">
-                <div class="db-card-header">
-                    <span class="db-card-title">🛡️ Live Security Check Preview</span>
-                    <button id="dbRefreshBtn" class="db-refresh-btn">↻ New Grid</button>
-                </div>
-                <div class="db-grid-mount" id="dbCaptchaMount"></div>
+            <div class="db-stat-card">
+                <p class="db-stat-label">Bots Blocked</p>
+                <div class="db-stat-value" id="counterBot" style="color:#ef4444;">0</div>
+                <p class="db-stat-sub" id="botPct">— of total</p>
             </div>
-
+            <div class="db-stat-card">
+                <p class="db-stat-label">Wrong Selections</p>
+                <div class="db-stat-value" id="counterWrong" style="color:#a855f7;">0</div>
+                <p class="db-stat-sub">Incorrect image chosen</p>
+            </div>
+            <div class="db-stat-card">
+                <p class="db-stat-label">Avg Latency</p>
+                <div class="db-stat-value" id="counterAvgLatency" style="color:#38bdf8;">--</div>
+                <p class="db-stat-sub">ms per session</p>
+            </div>
+            <div class="db-stat-card">
+                <p class="db-stat-label">Total Sessions</p>
+                <div class="db-stat-value" id="counterTotal" style="color:#94a3b8;">0</div>
+                <p class="db-stat-sub">All time</p>
+            </div>
         </div>
 
 
-        <!-- RIGHT COLUMN: Persistent Audit Log -->
-        <div class="db-right">
-            <div class="db-log-card">
-                <div class="db-log-header">
-                    <div class="db-log-title-group">
-                        <span class="db-log-title">Session Verification Log</span>
-                        <span class="db-log-count" id="logRowCount">0 entries</span>
-                    </div>
-                    <div class="db-log-actions">
-                        <button id="exportCsvBtn" class="db-action-btn export">⬇ Export CSV</button>
-                        <button id="clearLogBtn" class="db-action-btn">Clear</button>
-                    </div>
+        <!-- SESSION LOG TABLE -->
+        <div class="db-log-card">
+            <div class="db-log-header">
+                <div class="db-log-title-group">
+                    <span class="db-log-title">Session Verification Log</span>
+                    <span class="db-log-count" id="logRowCount">0 entries</span>
                 </div>
+                <div class="db-log-actions">
+                    <button id="exportCsvBtn" class="db-action-btn export">⬇ Export CSV</button>
+                    <button id="clearLogBtn" class="db-action-btn">Clear</button>
+                </div>
+            </div>
 
-                <div class="db-table-wrap">
-                    <table class="db-table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Timestamp</th>
-                                <th>Category Pair</th>
-                                <th>Latency (ms)</th>
-                                <th>Curvature</th>
-                                <th>Speed Variance</th>
-                                <th>Click (X, Y)</th>
-                                <th>Score</th>
-                                <th>Verdict</th>
-                                <th>Flags</th>
-                            </tr>
-                        </thead>
-                        <tbody id="logTableBody">
-                            <!-- Rows injected by JS -->
-                        </tbody>
-                    </table>
+            <div class="db-table-wrap">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Timestamp</th>
+                            <th>Category Pair</th>
+                            <th>Correct?</th>
+                            <th>Latency (ms)</th>
+                            <th>Curvature</th>
+                            <th>Speed Variance</th>
+                            <th>Click (X, Y)</th>
+                            <th>Score</th>
+                            <th>Verdict</th>
+                            <th>Flags</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logTableBody"></tbody>
+                </table>
 
-                    <div class="db-empty-state" id="emptyLogState">
-                        <div class="empty-icon">◈</div>
-                        <p>No sessions recorded yet.<br>Interactions on the <a href="index.html" style="color:#38bdf8;">Public Portal</a> will appear here.</p>
-                    </div>
+                <div class="db-empty-state" id="emptyLogState">
+                    <div class="empty-icon">◈</div>
+                    <p>No sessions yet.<br>Interactions on the <a href="index.html" style="color:#38bdf8;">Public Portal</a> will appear here automatically.</p>
                 </div>
             </div>
         </div>
@@ -527,66 +326,31 @@
     </div>
 
 
-    <script type="module">
-        import { CaptchaEngine } from './captcha-engine.js';
-
-        // ──────────────────────────────────────────────
-        // PERSISTENT LOG using localStorage
-        // ──────────────────────────────────────────────
+    <script>
         const LOG_KEY = 'aegis_session_log';
 
         function loadLog() {
-            try {
-                return JSON.parse(localStorage.getItem(LOG_KEY)) || [];
-            } catch {
-                return [];
-            }
-        }
-
-        function saveLog(entries) {
-            localStorage.setItem(LOG_KEY, JSON.stringify(entries));
+            try { return JSON.parse(localStorage.getItem(LOG_KEY)) || []; } catch { return []; }
         }
 
         let logEntries = loadLog();
 
-        // ──────────────────────────────────────────────
-        // CAPTCHA GRID PREVIEW (no detection UI here)
-        // ──────────────────────────────────────────────
-        const engine = new CaptchaEngine({ gridSize: 9, difficulty: 'hard', camouflage: true });
-
-        async function loadGrid() {
-            await engine.init();
-            engine.render(document.getElementById('dbCaptchaMount'), {
-                gridSize: 9, difficulty: 'hard', camouflage: true
-            });
-        }
-
-        // Refresh grid preview but do NOT log from admin side
-        engine.onVerifiedCallback = () => {};
-        engine.onFailedCallback = () => {};
-
-        document.getElementById('dbRefreshBtn').addEventListener('click', loadGrid);
-
-        // ──────────────────────────────────────────────
-        // LOG RENDERING
-        // ──────────────────────────────────────────────
-        function verdictBadge(classification) {
-            if (classification === 'HUMAN_VERIFIED')
-                return `<span class="db-verdict-human">Human</span>`;
-            if (classification === 'SUSPICIOUS_BEHAVIOR')
-                return `<span class="db-verdict-suspicious">Suspicious</span>`;
-            return `<span class="db-verdict-bot">Bot</span>`;
+        // ── Verdict badge HTML ──
+        function verdictBadge(entry) {
+            if (!entry.isCorrectSelection) return `<span class="db-verdict-wrong">Wrong Image</span>`;
+            if (entry.classification === 'HUMAN_VERIFIED') return `<span class="db-verdict-human">Human ✓</span>`;
+            if (entry.classification === 'SUSPICIOUS_BEHAVIOR') return `<span class="db-verdict-suspicious">Suspicious</span>`;
+            return `<span class="db-verdict-bot">Bot ✗</span>`;
         }
 
         function scoreBarHtml(score) {
             const color = score >= 70 ? '#10b981' : score >= 45 ? '#f59e0b' : '#ef4444';
-            return `
-                <div class="db-score-bar-wrap">
-                    <div class="db-score-mini-bar">
-                        <div class="db-score-mini-fill" style="width:${score}%; background:${color};"></div>
-                    </div>
-                    <span style="color:${color}; font-weight:700;">${score}%</span>
-                </div>`;
+            return `<div class="db-score-bar-wrap">
+                        <div class="db-score-mini-bar">
+                            <div class="db-score-mini-fill" style="width:${score}%; background:${color};"></div>
+                        </div>
+                        <span style="color:${color}; font-weight:700;">${score}%</span>
+                    </div>`;
         }
 
         function renderLog() {
@@ -597,6 +361,7 @@
                 tbody.innerHTML = '';
                 emptyState.style.display = 'block';
                 document.getElementById('logRowCount').textContent = '0 entries';
+                updateCounters();
                 return;
             }
 
@@ -606,17 +371,21 @@
             tbody.innerHTML = [...logEntries].reverse().map((entry, i) => {
                 const flags = (entry.flags || []).join(', ') || '—';
                 const rowNum = logEntries.length - i;
+                const correctCell = entry.isCorrectSelection
+                    ? `<span style="color:#10b981; font-weight:700;">Yes</span>`
+                    : `<span style="color:#a855f7; font-weight:700;">No</span>`;
                 return `<tr>
                     <td style="color:#475569;">${rowNum}</td>
                     <td>${entry.timestamp}</td>
                     <td><span style="color:#94a3b8;">${entry.dominantCat}</span> / <strong style="color:#f1f5f9;">${entry.intruderCat}</strong></td>
+                    <td>${correctCell}</td>
                     <td>${entry.latencyMs} ms</td>
                     <td>${entry.curvature}</td>
                     <td>${entry.speedVariance}</td>
                     <td>(${entry.clickX}, ${entry.clickY})</td>
                     <td>${scoreBarHtml(entry.score)}</td>
-                    <td>${verdictBadge(entry.classification)}</td>
-                    <td style="color:#ef4444; font-size:10px; max-width:160px; white-space:normal;">${flags}</td>
+                    <td>${verdictBadge(entry)}</td>
+                    <td style="color:#ef4444; font-size:10px; max-width:180px; white-space:normal;">${flags}</td>
                 </tr>`;
             }).join('');
 
@@ -624,67 +393,58 @@
         }
 
         function updateCounters() {
-            const humans = logEntries.filter(e => e.classification === 'HUMAN_VERIFIED').length;
-            const bots = logEntries.filter(e => e.classification === 'BOT_DETECTED').length;
             const total = logEntries.length;
+            const humans = logEntries.filter(e => e.classification === 'HUMAN_VERIFIED' && e.isCorrectSelection).length;
+            const bots = logEntries.filter(e => e.classification === 'BOT_DETECTED').length;
+            const wrong = logEntries.filter(e => !e.isCorrectSelection).length;
             const avgLatency = total > 0
-                ? Math.round(logEntries.reduce((sum, e) => sum + (e.latencyMs || 0), 0) / total)
+                ? Math.round(logEntries.reduce((s, e) => s + (Number(e.latencyMs) || 0), 0) / total)
                 : 0;
 
             document.getElementById('counterHuman').textContent = humans;
             document.getElementById('counterBot').textContent = bots;
+            document.getElementById('counterWrong').textContent = wrong;
             document.getElementById('counterTotal').textContent = total;
             document.getElementById('counterAvgLatency').textContent = total > 0 ? avgLatency : '--';
+            document.getElementById('humanPct').textContent = total > 0 ? `${Math.round(humans/total*100)}% pass rate` : '— of total';
+            document.getElementById('botPct').textContent = total > 0 ? `${Math.round(bots/total*100)}% of sessions` : '— of total';
         }
 
-        // ──────────────────────────────────────────────
-        // LISTEN FOR NEW SESSIONS FROM PUBLIC PORTAL
-        // The public portal writes to localStorage on each verification.
-        // ──────────────────────────────────────────────
-        window.addEventListener('storage', (event) => {
-            if (event.key === LOG_KEY) {
+        // Listen for new sessions written by public portal
+        window.addEventListener('storage', (e) => {
+            if (e.key === LOG_KEY) {
                 logEntries = loadLog();
                 renderLog();
             }
         });
 
-        // ──────────────────────────────────────────────
-        // BUTTON ACTIONS
-        // ──────────────────────────────────────────────
         document.getElementById('clearLogBtn').addEventListener('click', () => {
             if (confirm('Clear all stored session logs?')) {
                 logEntries = [];
-                saveLog(logEntries);
+                localStorage.removeItem(LOG_KEY);
                 renderLog();
             }
         });
 
         document.getElementById('exportCsvBtn').addEventListener('click', () => {
             if (logEntries.length === 0) { alert('No data to export.'); return; }
-
-            const headers = ['#', 'Timestamp', 'DominantCat', 'IntruderCat', 'LatencyMs', 'Curvature', 'SpeedVariance', 'ClickX', 'ClickY', 'Score', 'Classification', 'Flags'];
+            const headers = ['#','Timestamp','DominantCat','IntruderCat','CorrectSelection','LatencyMs','Curvature','SpeedVariance','ClickX','ClickY','Score','Classification','Flags'];
             const rows = logEntries.map((e, i) => [
-                i + 1, e.timestamp, e.dominantCat, e.intruderCat,
+                i+1, e.timestamp, e.dominantCat, e.intruderCat,
+                e.isCorrectSelection ? 'Yes' : 'No',
                 e.latencyMs, e.curvature, e.speedVariance,
                 e.clickX, e.clickY, e.score, e.classification,
-                (e.flags || []).join(' | ')
+                (e.flags||[]).join(' | ')
             ]);
-
             const csv = [headers, ...rows].map(r => r.map(v => `"${v}"`).join(',')).join('\n');
             const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
+            a.href = URL.createObjectURL(blob);
             a.download = `aegis_log_${Date.now()}.csv`;
             a.click();
-            URL.revokeObjectURL(url);
         });
 
-        // ──────────────────────────────────────────────
-        // INIT
-        // ──────────────────────────────────────────────
         window.addEventListener('DOMContentLoaded', () => {
-            loadGrid();
             renderLog();
         });
     </script>

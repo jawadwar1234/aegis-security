@@ -114,29 +114,37 @@
         const LOG_KEY = 'aegis_session_log';
 
         function saveSessionToLog(result) {
-            const bot = result.botAnalysis;
-            const challenge = result.challenge;
-            const now = new Date();
-            const entry = {
-                timestamp: now.toISOString().replace('T', ' ').slice(0, 19),
-                dominantCat: challenge.dominantCat || '—',
-                intruderCat: challenge.intruderCat || '—',
-                latencyMs: bot.metrics.durationMs,
-                curvature: bot.metrics.curvatureRatio,
-                speedVariance: bot.metrics.speedStdDev,
-                clickX: bot.metrics.clickCoordinates.x,
-                clickY: bot.metrics.clickCoordinates.y,
-                score: bot.humanScore,
-                classification: bot.classification,
-                flags: bot.diagnostics.flags || []
-            };
+            try {
+                const bot = result.botAnalysis || {};
+                const metrics = bot.metrics || {};
+                const challenge = result.challenge || {};
+                const diagnostics = bot.diagnostics || {};
+                const coords = metrics.clickCoordinates || { x: 0.5, y: 0.5 };
 
-            let existing = [];
-            try { existing = JSON.parse(localStorage.getItem(LOG_KEY)) || []; } catch {}
-            existing.push(entry);
-            // keep at most 500 entries
-            if (existing.length > 500) existing = existing.slice(-500);
-            localStorage.setItem(LOG_KEY, JSON.stringify(existing));
+                const now = new Date();
+                const entry = {
+                    timestamp: now.toISOString().replace('T', ' ').slice(0, 19),
+                    dominantCat: challenge.dominantCat || '—',
+                    intruderCat: challenge.intruderCat || '—',
+                    isCorrectSelection: result.isCorrectSelection === true,
+                    latencyMs: metrics.durationMs || 0,
+                    curvature: metrics.curvatureRatio !== undefined ? metrics.curvatureRatio : '—',
+                    speedVariance: metrics.speedStdDev !== undefined ? metrics.speedStdDev : '—',
+                    clickX: coords.x !== undefined ? coords.x : '—',
+                    clickY: coords.y !== undefined ? coords.y : '—',
+                    score: bot.humanScore !== undefined ? bot.humanScore : 0,
+                    classification: bot.classification || 'UNKNOWN',
+                    flags: diagnostics.flags || []
+                };
+
+                let existing = [];
+                try { existing = JSON.parse(localStorage.getItem(LOG_KEY)) || []; } catch { existing = []; }
+                existing.push(entry);
+                if (existing.length > 500) existing = existing.slice(-500);
+                localStorage.setItem(LOG_KEY, JSON.stringify(existing));
+            } catch (err) {
+                console.warn('AEGIS: Failed to save session log entry:', err);
+            }
         }
 
         const engine = new CaptchaEngine({

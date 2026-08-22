@@ -224,16 +224,29 @@ export class CaptchaEngine {
      * Evaluates selection and behavioral telemetry.
      */
     _handleSelection(selectedIndex, tileElement) {
+        // Guard: only allow one selection per active challenge
         if (!this.currentChallenge) return;
+        if (this.currentChallenge._selectionHandled) return;
+        this.currentChallenge._selectionHandled = true;
 
         this.telemetryRecorder.stopRecording();
         const telemetrySummary = this.telemetryRecorder.getTelemetrySummary();
 
-        const isCorrectSelection = (selectedIndex === this.currentChallenge.targetIndex);
+        // Snapshot challenge data BEFORE anything else can change it
+        const challengeSnapshot = {
+            challengeId: this.currentChallenge.challengeId,
+            difficulty: this.currentChallenge.difficulty,
+            dominantCat: this.currentChallenge.dominantCat,
+            intruderCat: this.currentChallenge.intruderCat,
+            targetIndex: this.currentChallenge.targetIndex,
+            selectedIndex
+        };
+
+        const isCorrectSelection = (selectedIndex === challengeSnapshot.targetIndex);
         const botAnalysis = BotDetector.analyze(telemetrySummary, {
             gridSize: this.currentChallenge.gridSize,
             difficulty: this.currentChallenge.difficulty,
-            targetIndex: this.currentChallenge.targetIndex,
+            targetIndex: challengeSnapshot.targetIndex,
             selectedIndex
         });
 
@@ -243,14 +256,7 @@ export class CaptchaEngine {
             success: passed,
             isCorrectSelection,
             botAnalysis,
-            challenge: {
-                challengeId: this.currentChallenge.challengeId,
-                difficulty: this.currentChallenge.difficulty,
-                dominantCat: this.currentChallenge.dominantCat,
-                intruderCat: this.currentChallenge.intruderCat,
-                targetIndex: this.currentChallenge.targetIndex,
-                selectedIndex
-            },
+            challenge: challengeSnapshot,
             telemetry: telemetrySummary
         };
 
@@ -262,6 +268,7 @@ export class CaptchaEngine {
             }
         }
 
+        // Always fire callback regardless of which path
         if (passed) {
             if (this.onVerifiedCallback) this.onVerifiedCallback(result);
         } else {
@@ -270,6 +277,7 @@ export class CaptchaEngine {
 
         return result;
     }
+
 
     _shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
