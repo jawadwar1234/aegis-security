@@ -530,7 +530,7 @@
                     <span class="kpi-label">Wrong Selections</span>
                 </div>
                 <div class="kpi-value purple" id="counterWrong">0</div>
-                <div class="kpi-sub">Incorrect image clicked</div>
+                <div class="kpi-sub" id="wrongPct">Incorrect image clicked</div>
             </div>
 
             <div class="kpi-card">
@@ -704,20 +704,22 @@
         // ── Calculate and Update KPI Counters ──
         function updateCounters() {
             const total = logEntries.length;
-            const humans = logEntries.filter(e => e.classification === 'HUMAN_VERIFIED').length;
-            const bots = logEntries.filter(e => e.classification === 'BOT_DETECTED').length;
             const wrong = logEntries.filter(e => e.classification === 'WRONG_ANSWER' || e.isCorrectSelection === false).length;
             const avgLatency = total > 0
                 ? Math.round(logEntries.reduce((s, e) => s + (Number(e.latencyMs) || 0), 0) / total)
                 : 0;
 
-            document.getElementById('counterHuman').textContent = humans;
-            document.getElementById('counterBot').textContent = bots;
-            document.getElementById('counterWrong').textContent = wrong;
-            document.getElementById('counterTotal').textContent = total;
-            document.getElementById('counterAvgLatency').textContent = total > 0 ? `${avgLatency} ms` : '--';
-            document.getElementById('humanPct').textContent = total > 0 ? `${Math.round(humans / total * 100)}% pass rate` : '0% pass rate';
-            document.getElementById('botPct').textContent = total > 0 ? `${Math.round(bots / total * 100)}% of sessions` : '0% of sessions';
+            const elWrong = document.getElementById('counterWrong');
+            if (elWrong) elWrong.textContent = wrong;
+
+            const elTotal = document.getElementById('counterTotal');
+            if (elTotal) elTotal.textContent = total;
+
+            const elAvg = document.getElementById('counterAvgLatency');
+            if (elAvg) elAvg.textContent = total > 0 ? `${avgLatency} ms` : '--';
+
+            const elWrongPct = document.getElementById('wrongPct');
+            if (elWrongPct) elWrongPct.textContent = total > 0 ? `${Math.round(wrong / total * 100)}% of sessions` : '0% of sessions';
         }
 
         // ── Synchronize with Public Portal Activity ──
