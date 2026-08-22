@@ -168,11 +168,10 @@ export class CaptchaEngine {
             <div class="aegis-captcha-box ${challenge.camouflage ? 'camouflage-mode' : ''}" id="aegisCaptchaBox">
                 <div class="captcha-header">
                     <div class="captcha-badge">
-                        <span class="shield-icon">🛡️</span>
                         <span>Security Check</span>
                     </div>
                     <button type="button" class="captcha-reload-btn" id="captchaReloadBtn" title="Try another set">
-                        ↻
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
                     </button>
                 </div>
                 
@@ -198,7 +197,7 @@ export class CaptchaEngine {
                         <span class="dot-pulse"></span>
                         <span>Verification Active</span>
                     </div>
-                    <span class="aegis-brand">AEGIS Verification</span>
+                    <span class="aegis-brand">AEGIS</span>
                 </div>
             </div>
         `;
